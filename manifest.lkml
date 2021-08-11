@@ -1,6 +1,6 @@
 application: lookml_syncer {
   label: "LookML dashboard Syncer"
-  file: "sync_lookml.js"
+  file: "bundle.js"
   entitlements: {
     local_storage: no
     navigation: no
