@@ -7,8 +7,13 @@ This is a good solution to the problem of maintaining centrally-controlled dashb
 
 This functionality is currently only possible through the API, hence this extension.
 
----
 *Note: This is not officially supported by Looker or Google in any way. Use at your own risk*
+---
+### Demo
+![](demo/sync.gif)
+
+
+---
 
 ### Installation
 * Copy the `manifest.lkml` and `dist/bundle.js` files into your looker environment.
