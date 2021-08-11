@@ -1,11 +1,12 @@
-
-project_name: "looker-dashboard-sync"
-
-application: looker-dashboard-sync {
-  label: "looker-dashboard-sync"
-  url: "http://localhost:8080/bundle.js"
-  # file: "bundle.js
+application: lookml_syncer {
+  label: "LookML dashboard Syncer"
+  file: "sync_lookml.js"
   entitlements: {
-  core_api_methods: ["me"] #Add more entitlements here as you develop new functionality
-}
+    local_storage: no
+    navigation: no
+    new_window: no
+    use_form_submit: no
+    use_embeds: no
+    core_api_methods: ["all_dashboards", "update_dashboard", "sync_lookml_dashboard"]
+  }
 }
