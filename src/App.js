@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { Box, Space, Spinner, ComponentsProvider, Flex, Tabs, Tab, TabList, TabPanel, TabPanels, MessageBar, Heading } from '@looker/components'
+import { Text, Box, Space, Spinner, ComponentsProvider, Flex, Tabs, Tab, TabList, TabPanel, TabPanels, MessageBar, Heading } from '@looker/components'
 import { ExtensionProvider } from '@looker/extension-sdk-react'
 import { AppContextProvider, AppContext } from './Sync/AppContext.js'
 import { isEmpty } from 'lodash'
@@ -13,6 +13,7 @@ const PAGES = [
   { ix: 1, title: '2. Create Links', heading: 'Create Links', content: <CreateLinks/>},
   { ix: 2, title: '3. Sync Dashboards', heading: 'Sync Dashboards', content: <SyncDashBoards/>}
   ]
+const DEFAULTPAGE = 0
 
 const MessageBanner = () => {
   const { msg } = useContext(AppContext)
@@ -21,7 +22,10 @@ const MessageBanner = () => {
 
 const LoadingWrapper = (props) => {
   if (props.isLoading) {
-    return <Space around p='xxxlarge'><Spinner size={80}/></Space>
+    return <Space around p='xxxlarge'>
+      <Text>Loading dashboards...</Text>
+      <Spinner size={50} color='purple'/>
+      </Space>
   } else {
     return props.children
   }
@@ -49,7 +53,7 @@ const TabbedNav = (props) => {
 
 const AppInner = () => {
   const { isLoading } = useContext(AppContext)
-  const [currentTab, setCurrentTab] = useState(2)
+  const [currentTab, setCurrentTab] = useState(DEFAULTPAGE)
   return (
     <LoadingWrapper isLoading={isLoading}>
       <Space around>
