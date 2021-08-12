@@ -7,13 +7,11 @@ import { hot } from 'react-hot-loader/root'
 import { CreateLinks } from './Sync/CreateLinks'
 import { SyncDashBoards } from './Sync/SyncDashboards'
 import { InfoPage } from './Sync/InfoPage'
-import { ViewLinks } from './Sync/ViewLinks'
 
 const PAGES = [
   { ix: 0, title: '1. Information', heading: 'Information', content: <InfoPage/>},
   { ix: 1, title: '2. Create Links', heading: 'Create Links', content: <CreateLinks/>},
-  { ix: 2, title: '3. Sync Dashboards', heading: 'Sync Dashboards', content: <SyncDashBoards/>},
-  { ix: 3, title: '4. View Existing Links', heading: 'View Links', content: <ViewLinks/>}
+  { ix: 2, title: '3. Sync Dashboards', heading: 'Sync Dashboards', content: <SyncDashBoards/>}
   ]
 const DEFAULTPAGE = 0
 
