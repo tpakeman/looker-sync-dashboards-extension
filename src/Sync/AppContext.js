@@ -7,28 +7,15 @@ export const AppContextProvider = (props) => {
   const { core40SDK } = useContext(ExtensionContext)
   const [msg, setMsg] = useState({})
   const [log, setLog] = useState([])
+  const [rawDashData, setRawDashData] = useState({})
   const [dashData, setDashData] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
     const initialise = async () => { 
     try {
-        let r = await core40SDK.search_dashboards('id,lookml_link_id')
-        let data = r.value
-          .map(v => ({id: v.id, lookml_link_id: v.lookml_link_id}))
-          .filter(v => v.lookml_link_id)
-        let UDDMap = data.reduce((acc, cur) => {
-            acc[cur.id] = cur.lookml_link_id
-            return acc
-          }, {})
-        let lookmlMap = data.reduce((acc, cur) => {
-            if (cur.lookml_link_id in acc) {
-              acc[cur.lookml_link_id].push(cur.id)
-            } else {
-              acc[cur.lookml_link_id] = [cur.id]
-            }
-            return acc
-          }, {})
+        let [UDDMap, lookmlMap] = await fetchLinks()
         let v = await core40SDK.all_dashboards()
+        setRawDashData(v.value)
         processDashboards(v.value, UDDMap, lookmlMap);
         setIsLoading(false)
       } catch (error) {
@@ -38,6 +25,31 @@ export const AppContextProvider = (props) => {
     }
     initialise()
   }, [])
+
+  const fetchLinks = async () => {
+    let r = await core40SDK.search_dashboards('id,lookml_link_id')
+    let data = r.value
+      .map(v => ({id: v.id, lookml_link_id: v.lookml_link_id}))
+      .filter(v => v.lookml_link_id)
+    let UDDMap = data.reduce((acc, cur) => {
+        acc[cur.id] = cur.lookml_link_id
+        return acc
+      }, {})
+    let lookmlMap = data.reduce((acc, cur) => {
+        if (cur.lookml_link_id in acc) {
+          acc[cur.lookml_link_id].push(cur.id)
+        } else {
+          acc[cur.lookml_link_id] = [cur.id]
+        }
+        return acc
+      }, {})
+    return [UDDMap, lookmlMap]
+  }
+
+  const remapLinks = async () => {
+    let [UDDMap, lookmlMap] = await fetchLinks()
+    processDashboards(rawDashData, UDDMap, lookmlMap);
+  }
 
   const processDashboards = (v, UDDMap, lookmlMap) => {
     let tmp = {UDD: {}, LookML: {}}
@@ -58,6 +70,26 @@ export const AppContextProvider = (props) => {
       addLog(`Making link between ${d} and ${LookML}`)
       try {
         core40SDK.update_dashboard(d, {lookml_link_id: LookML}).then(r => {
+          if (r.ok) {
+            addLog(`Success for dashboard ${d}`)
+          } else {
+            addLog(`Failure for dashboard ${d}. Check console`)
+            console.log(JSON.stringify(r))
+          }
+        })
+      } catch (e) {
+        console.error(e)
+        addLog(`ERROR! ${e}`)
+        addMsg('critical', e)
+      }
+    })
+  }
+
+  const removeLinks = (UDDs) => {
+    UDDs.forEach(d => {
+      addLog(`Removing lookml_link_ids for ${d}`)
+      try {
+        core40SDK.update_dashboard(d, {lookml_link_id: ''}).then(r => {
           if (r.ok) {
             addLog(`Success for dashboard ${d}`)
           } else {
@@ -112,7 +144,9 @@ export const AppContextProvider = (props) => {
     setDashData,
     isLoading,
     makeLinks,
-    syncLookMLDash
+    syncLookMLDash,
+    remapLinks,
+    removeLinks
   }
   return (
     <AppContext.Provider value={contextValue}>

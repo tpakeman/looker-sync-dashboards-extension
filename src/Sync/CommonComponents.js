@@ -5,5 +5,5 @@ export const RoundedBox = styled(Box)`
     border: 1px solid #DEE1E5;
     border-radius: 4px ;
     padding: 20px;
-    min-height: 70vh;
+    min-height: 50vh;
     `

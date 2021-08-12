@@ -3,17 +3,28 @@ import { AppContext } from './AppContext.js'
 import { Button, Box, Flex, DividerVertical, Heading, List, ListItem } from '@looker/components'
 import { ChooseDashboards } from './ChooseDashboards.js'
 import { LogContainer } from './LogContainer.js'
-import { isEmpty, without } from 'lodash'
+import { isEmpty } from 'lodash'
 import { RoundedBox } from './CommonComponents.js'
 
+// Fix CSS!
+
  export const CreateLinks = () => {
-    const { dashData, makeLinks } = useContext(AppContext)
+    const { dashData, makeLinks, remapLinks, removeLinks } = useContext(AppContext)
     const [selectedLookML, setSelectedLookML] = useState(undefined)
     const [selectedDash, setSelectedDash] = useState([])
     
     const handleCreateLinks = () => {
       if (isEmpty(selectedDash) || isEmpty(selectedLookML)) return
       makeLinks(selectedDash, selectedLookML)
+      remapLinks()
+    }
+
+    const handleRemoveLinks = () => {
+      if (isEmpty(selectedDash) && isEmpty(selectedLookML)) return
+      let linkedUDDs = (!isEmpty(selectedLookML)) ? dashData.LookML[selectedLookML].linked : []
+      let selected = [...selectedDash, ...linkedUDDs]
+      removeLinks(selected)
+      remapLinks()
     }
 
     const prettify = (o) => JSON.stringify(o, null, 2).replace(/[\[\]\"]/gm, '')
@@ -68,14 +79,20 @@ import { RoundedBox } from './CommonComponents.js'
             <Box margin='0px 20px'><ChooseDashboards data={dashData.LookML} Fn={setSelectedLookML} heading='1.Choose LookML Dashboard'/></Box>
             <Box margin='0px 20px'><ChooseDashboards multi UDD data={dashData.UDD} Fn={setSelectedDash} heading='2.Choose UDDs to Link'/></Box>
             </Flex>
-          <Box m='medium'>
-            {(selectedDash.length >0 && selectedLookML) && 
+          <Flex m='medium' justifyContent='space-around' width='80%'>
+            {(selectedDash.length > 0 && selectedLookML) && 
             <Button
-              width='100%'
+              width='40%'
               onClick={handleCreateLinks}
             >Create Links with {selectedDash.length} UDD{selectedDash.length > 1 && 's'}</Button>
             }
-          </Box>
+            {(selectedDash.length > 0 || selectedLookML) && 
+            <Button
+              width='40%'
+              color='critical'
+              onClick={handleRemoveLinks}
+            >Remove Links</Button>}
+          </Flex>
           </Flex>
           <DividerVertical stretch/>
           <Flex flexDirection='column' justifyContent='space-between'>

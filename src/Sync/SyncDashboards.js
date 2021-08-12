@@ -5,6 +5,8 @@ import {isEmpty} from 'lodash'
 import { ChooseDashboards } from './ChooseDashboards'
 import { LogContainer } from './LogContainer'
 
+//TO DO - show what will be synced when you hit the sync button
+
 export const SyncDashBoards = () => {
   const [chosenLookML, setChosenLookML] = useState(undefined)
   const {dashData, syncLookMLDash} = useContext(AppContext)
