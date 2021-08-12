@@ -1,12 +1,11 @@
-import React, {  useContext, useState, createContext, useEffect } from 'react'
+import React, {  useContext, useState, useReducer, createContext, useEffect } from 'react'
 import { ExtensionContext } from '@looker/extension-sdk-react'
-import { initial } from 'lodash'
 export const AppContext = createContext()
 
 export const AppContextProvider = (props) => {
   const { core40SDK } = useContext(ExtensionContext)
   const [msg, setMsg] = useState({})
-  const [log, setLog] = useState([])
+  const [log, addLog] = useReducer((cur, m) => {cur.unshift(m);  return cur}, [])
   const [rawDashData, setRawDashData] = useState({})
   const [dashData, setDashData] = useState({})
   const [isLoading, setIsLoading] = useState(true)
@@ -74,7 +73,6 @@ export const AppContextProvider = (props) => {
             addLog(`Success for dashboard ${d}`)
           } else {
             addLog(`Failure for dashboard ${d}. Check console`)
-            console.log(JSON.stringify(r))
           }
         })
       } catch (e) {
@@ -94,7 +92,6 @@ export const AppContextProvider = (props) => {
             addLog(`Success for dashboard ${d}`)
           } else {
             addLog(`Failure for dashboard ${d}. Check console`)
-            console.log(JSON.stringify(r))
           }
         })
       } catch (e) {
@@ -113,7 +110,6 @@ export const AppContextProvider = (props) => {
           addLog(`Success for ${LookML}`)
         } else {
           addLog(`Failure for ${LookML}. Check console`)
-          console.log(JSON.stringify(r))
         }
       })
     } catch (e) {
@@ -126,12 +122,6 @@ export const AppContextProvider = (props) => {
   const clearMsg = () => {setMsg({})}
   // intent = 'critical', 'inform', 'positive'
   const addMsg = (intent, msg) => {setMsg({intent:intent, msg:msg})}
-  const clearLog = () => {setLog([])}
-  const addLog = (m) => {
-    let tmp = [...log]
-    tmp.push(m)
-    setLog(tmp)
-  }
 
   const contextValue = {
     msg,
@@ -139,7 +129,6 @@ export const AppContextProvider = (props) => {
     addMsg,
     clearMsg,
     addLog,
-    clearLog,
     dashData,
     setDashData,
     isLoading,

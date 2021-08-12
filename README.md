@@ -33,7 +33,7 @@ This functionality is currently only possible through the API, hence this extens
 ### Known issues
 * UDD browser does not do nesting correctly - it only handles a single layer from folder-->dashboard
   * This will be replaced with a proper content browser soon
-* Logging overwrites messages within a function instead of appending
+* Logging is double-showing messages
 
 ### Upcoming Features
 * Add a clear log button

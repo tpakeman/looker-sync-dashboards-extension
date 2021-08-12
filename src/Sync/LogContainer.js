@@ -8,7 +8,7 @@ export const LogContainer = () => {
     return (
         <RoundedBox>
             <Heading as='h5' p='medium'>Activity Log</Heading>
-            <Box overflowY='scroll' p='small'>
+            <Box overflowY='scroll' p='small' height='85%'>
             <Text color='#939BA5' fontFamily='Roboto Mono, Monospace' lineHeight='16px' fontSize='16px'>{log.map((l, x) => <p key={x}>{l}</p>)}</Text>
         </Box>
             </RoundedBox>
