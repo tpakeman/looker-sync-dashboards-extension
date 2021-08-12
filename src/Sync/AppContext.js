@@ -1,5 +1,6 @@
 import React, {  useContext, useState, createContext, useEffect } from 'react'
 import { ExtensionContext } from '@looker/extension-sdk-react'
+import { initial } from 'lodash'
 export const AppContext = createContext()
 
 export const AppContextProvider = (props) => {
@@ -9,23 +10,43 @@ export const AppContextProvider = (props) => {
   const [dashData, setDashData] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
-      try {
-        core40SDK.all_dashboards().then(v => {
-          processDashboards(v.value);
-          setIsLoading(false)
-        })
+    const initialise = async () => { 
+    try {
+        let r = await core40SDK.search_dashboards('id,lookml_link_id')
+        let data = r.value
+          .map(v => ({id: v.id, lookml_link_id: v.lookml_link_id}))
+          .filter(v => v.lookml_link_id)
+        let UDDMap = data.reduce((acc, cur) => {
+            acc[cur.id] = cur.lookml_link_id
+            return acc
+          }, {})
+        let lookmlMap = data.reduce((acc, cur) => {
+            if (cur.lookml_link_id in acc) {
+              acc[cur.lookml_link_id].push(cur.id)
+            } else {
+              acc[cur.lookml_link_id] = [cur.id]
+            }
+            return acc
+          }, {})
+        let v = await core40SDK.all_dashboards()
+        processDashboards(v.value, UDDMap, lookmlMap);
+        setIsLoading(false)
       } catch (error) {
         setMsg('critical', error)
         console.error(error)
       }
+    }
+    initialise()
   }, [])
 
-  const processDashboards = (v) => {
+  const processDashboards = (v, UDDMap, lookmlMap) => {
     let tmp = {UDD: {}, LookML: {}}
     v.forEach(d => {
       if (isNaN(d.id)) {
+        d.linked = d.id in lookmlMap ? lookmlMap[d.id] : []
         tmp.LookML[d.id] = d
       } else {
+        d.lookml_link_id = String(d.id) in UDDMap ? UDDMap[d.id] : null
         tmp.UDD[d.id] = d
       }
     });

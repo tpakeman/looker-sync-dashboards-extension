@@ -15,10 +15,10 @@ export const SyncDashBoards = () => {
     }
 
     return (
-      <Flex flexDirection='row' m='medium' justifyContent='space-around' alignItems='center'>
+      <Flex flexDirection='row' p='medium' justifyContent='space-around' alignItems='flex-start'>
       <Box maxWidth='50vw'>
-      <Flex flexDirection='column' m='medium' justifyContent='space-between'>
-        <ChooseDashboards data={dashData.LookML} setSelectedDash={setChosenLookML} heading='1.Choose LookML Dashboard to Sync'/>
+      <Flex flexDirection='column' justifyContent='space-between'>
+        <ChooseDashboards data={dashData.LookML} Fn={setChosenLookML} heading='1.Choose LookML Dashboard to Sync'/>
         {chosenLookML && 
         <Button
           size='large'

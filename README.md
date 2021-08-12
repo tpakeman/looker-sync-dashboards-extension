@@ -37,6 +37,7 @@ This functionality is currently only possible through the API, hence this extens
 * CSS is bad
 
 ### Upcoming Features
+* Add a visual indicator of which dashboards already have links
 * Add a clear log button
 * Add icons to show which folder type is which
 * Link to successfully synced dashboards

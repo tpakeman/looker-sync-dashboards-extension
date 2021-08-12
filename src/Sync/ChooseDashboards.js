@@ -22,7 +22,7 @@ export const ChooseDashboards = (props) => {
 
     const handleClick = (e) => {
         let tmp = e
-        if (props.UDD) {
+        if (props.multi) {
             if (selectedDash.includes(e)) {
                 tmp = selectedDash.filter(v => v !== e)
             } else {
@@ -31,7 +31,7 @@ export const ChooseDashboards = (props) => {
             tmp = tmp.filter((v, i, s) => s.indexOf(v) == i)
         } 
         setSelectedDash(tmp)
-        props.setSelectedDash(tmp)
+        props.Fn(tmp)
       }
     
 
@@ -72,7 +72,7 @@ export const ChooseDashboards = (props) => {
       }
     
     return (
-        <RoundedBox style={{minWidth: '500px'}} m='medium'>
+        <RoundedBox style={{minWidth: '20vw'}}>
           <Heading as='h3' mb='small'>{props.heading}</Heading>
           <InputSearch
             placeholder='Search by Dashboard Name'
@@ -91,7 +91,7 @@ export const ChooseDashboards = (props) => {
                   content={
                   <MenuList style={{height: '80%', overflowY: 'scroll'}}>
                     {e.options.map((o, ix2) => {
-                    let isMatch = props.UDD ? selectedDash.includes(o.value) : selectedDash == o.value;
+                    let isMatch = props.multi ? selectedDash.includes(o.value) : selectedDash == o.value;
                     return (
                     <MenuItem
                       key={ix2}
@@ -114,7 +114,7 @@ export const ChooseDashboards = (props) => {
                 )}
             </List>
           </Panels>
-          {props.UDD && (
+          {props.multi && (
             <Flex flexDirection='row' alignItems='center' justifyContent='space-between'>
             {!isEmpty(selectedDash) &&  (
             <>
