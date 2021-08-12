@@ -72,7 +72,7 @@ export const ChooseDashboards = (props) => {
       }
     
     return (
-        <RoundedBox style={{width: '100%', height: '100%'}}>
+        <RoundedBox style={{width: '100%', height: '100%', overflowX:'hidden'}}>
           <Flex flexDirection='column' justifyContent='space-between' alignContent='stretch' height='100%'>
           <Heading as='h3' mb='small'>{props.heading}</Heading>
           <InputSearch

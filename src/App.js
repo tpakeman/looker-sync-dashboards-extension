@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import { Text, Box, Space, Spinner, ComponentsProvider, Flex, Tabs, Tab, TabList, TabPanel, TabPanels, MessageBar, Heading } from '@looker/components'
+import { Box, Space, Spinner, ComponentsProvider, Flex, Tabs, Tab, TabList, TabPanel, TabPanels, MessageBar, Heading } from '@looker/components'
 import { ExtensionProvider } from '@looker/extension-sdk-react'
 import { AppContextProvider, AppContext } from './Sync/AppContext.js'
 import { isEmpty } from 'lodash'
@@ -25,7 +25,7 @@ const MessageBanner = () => {
 const LoadingWrapper = (props) => {
   if (props.isLoading) {
     return <Space around p='xxxlarge'>
-      <Text>Loading dashboards...</Text>
+      <Heading as='h4'>Loading dashboards...</Heading>
       <Spinner size={50} color='purple'/>
       </Space>
   } else {
@@ -35,7 +35,7 @@ const LoadingWrapper = (props) => {
 
 const TabbedNav = (props) => {
   return (
-    <Box style={{minWidth: '100vw'}}>
+    <Box width='100%'>
       <Tabs index={props.currentTab} onChange={props.setCurrentTab}>
         <TabList>
         {props.pages.map(p => <Tab key={p.ix}>{p.title}</Tab>)}
@@ -59,7 +59,7 @@ const AppInner = () => {
   return (
     <LoadingWrapper isLoading={isLoading}>
       <Space around>
-      <Flex flexDirection='column' alignItems='flex-start' p='medium' width='100%'>
+      <Flex flexDirection='column' alignItems='flex-start' alignContent='stretch' p='medium' width='100%'>
         <MessageBanner/>
         <TabbedNav
           currentTab={currentTab}

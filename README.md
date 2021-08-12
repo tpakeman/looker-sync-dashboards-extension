@@ -38,6 +38,9 @@ This functionality is currently only possible through the API, hence this extens
 
 ### Upcoming Features
 * Add a visual indicator of which dashboards already have links
+  * Use clsx - how to combine this with the selection indicator?
+  * Will need to split out UDDs from LookML at this point
+  * May be no need for a separate view page? - Just show an info box in the 'make links' section?
 * Add a clear log button
 * Add icons to show which folder type is which
 * Link to successfully synced dashboards

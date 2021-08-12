@@ -18,6 +18,7 @@ import { RoundedBox } from './CommonComponents.js'
       if (isEmpty(selectedDash) || isEmpty(selectedLookML)) return
       makeLinks(selectedDash, selectedLookML)
       remapLinks()
+      setCurrentTab(1)
     }
 
     const handleRemoveLinks = () => {
@@ -26,6 +27,7 @@ import { RoundedBox } from './CommonComponents.js'
       let selected = [...selectedDash, ...linkedUDDs]
       removeLinks(selected)
       remapLinks()
+      setCurrentTab(1)
     }
 
     const prettify = (o) => JSON.stringify(o, null, 2).replace(/[\[\]\"]/gm, '')
@@ -61,7 +63,7 @@ import { RoundedBox } from './CommonComponents.js'
       }
 
       return (
-        <RoundedBox minWidth='30vw' style={{marginTop: '20px', minHeight: '60vh'}}>
+        <RoundedBox>
         <Heading as='h5' p='small'>Info</Heading>
         <List style={{overflowY: 'scroll'}}>
           {hasLink && <ListItem disabled>{linkText}</ListItem>}
@@ -77,13 +79,13 @@ import { RoundedBox } from './CommonComponents.js'
 
     return (
       <Box>
-        <Flex flexDirection='row' justifyContent='space-around' alignItems='flex-start' m='medium'>
-          <Flex flexDirection='column' alignItems='center' justifyContent='space-between' width='55vw'>
-            <Flex flexDirection='row' justifyContent='space-between'>
-            <Box margin='0px 20px'><ChooseDashboards data={dashData.LookML} Fn={setSelectedLookML} heading='1.Choose LookML Dashboard'/></Box>
-            <Box margin='0px 20px'><ChooseDashboards multi UDD data={dashData.UDD} Fn={setSelectedDash} heading='2.Choose UDDs to Link'/></Box>
+        <Flex flexDirection='row' justifyContent='space-evenly' alignContent='stretch' m='medium' height='100%'>
+          <Flex flexDirection='column' alignItems='stretch' justifyContent='space-between' alignContent='stretch' width='50vw'>
+            <Flex flexDirection='row' justifyContent='space-around'>
+            <Box width='45%'><ChooseDashboards data={dashData.LookML} Fn={setSelectedLookML} heading='1.Choose LookML Dashboard'/></Box>
+            <Box  width='45%'><ChooseDashboards multi UDD data={dashData.UDD} Fn={setSelectedDash} heading='2.Choose UDDs to Link'/></Box>
             </Flex>
-          <Flex m='medium' justifyContent='space-around' width='80%'>
+          <Flex m='medium' justifyContent='space-evenly'>
             <Button
             disabled={!(selectedDash.length > 0 && selectedLookML)}
               width='40%'
@@ -98,7 +100,7 @@ import { RoundedBox } from './CommonComponents.js'
           </Flex>
           </Flex>
           <DividerVertical stretch/>
-          <Box width='35vw'>
+          <Box width='35vw' height='100%'>
 
           <Tabs index={currentTab} onChange={setCurrentTab}>
         <TabList>
