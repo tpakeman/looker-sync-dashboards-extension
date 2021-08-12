@@ -1,6 +1,6 @@
 import React, {  useState, useContext } from 'react'
 import { AppContext } from './AppContext.js'
-import { Flex, Heading, InputSearch,MenuList, MenuItem, Panels, Panel, List, ListItem, Text, ButtonOutline, Icon} from '@looker/components'
+import { Flex, Heading, InputSearch,MenuList, MenuItem, Panels, Panel, List, ListItem, Text, ButtonOutline, Icon, Divider} from '@looker/components'
 import { RoundedBox } from './CommonComponents.js'
 import { isEmpty } from 'lodash'
 import { Reports } from '@looker/icons'
@@ -72,7 +72,8 @@ export const ChooseDashboards = (props) => {
       }
     
     return (
-        <RoundedBox style={{minWidth: '20vw'}}>
+        <RoundedBox style={{width: '100%', height: '100%'}}>
+          <Flex flexDirection='column' justifyContent='space-between' alignContent='stretch' height='100%'>
           <Heading as='h3' mb='small'>{props.heading}</Heading>
           <InputSearch
             placeholder='Search by Dashboard Name'
@@ -80,8 +81,8 @@ export const ChooseDashboards = (props) => {
             onChange={setSearchText}
             marginBottom='small'
           />
-          <Panels style={{maxHeight: '80%'}}>
-            <List iconGutter={props.UDD}>
+          <Panels>
+            <List iconGutter={props.UDD} style={{margin:'auto'}}>
               <Text>{props.UDD ? 'Folders' : 'Models'}</Text>
               {getOptions().map((e, ix) => {
                 return (<Panel
@@ -114,16 +115,18 @@ export const ChooseDashboards = (props) => {
                 )}
             </List>
           </Panels>
-          {props.multi && (
-            <Flex flexDirection='row' alignItems='center' justifyContent='space-between'>
-            {!isEmpty(selectedDash) &&  (
-            <>
-            <Text>{`${selectedDash.length} dashboard(s) selected`}</Text>
-              <ButtonOutline color='critical' marginBottom='medium'
-            onClick={clearAll}>Clear All </ButtonOutline></>
-            )}
+            <Divider stretch/>
+            <Flex width='100%' flexDirection='row' alignSelf='flex-end' justifyContent='space-between' mt='small'>
+            <Text>{`${props.multi ? selectedDash.length: (isEmpty(selectedDash) ? '0' : '1')} selected`}</Text>
+              <ButtonOutline
+                size='xsmall'
+                color='critical'
+                marginBottom='medium'
+                onClick={clearAll}
+                disabled={isEmpty(selectedDash)}
+              >Clear</ButtonOutline>
             </Flex>
-          )}
+            </Flex>
         </RoundedBox>
       )
 }

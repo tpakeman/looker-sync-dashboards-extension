@@ -18,7 +18,7 @@ export const SyncDashBoards = () => {
 
     return (
       <Flex flexDirection='row' p='medium' justifyContent='space-around' alignItems='flex-start'>
-      <Box maxWidth='50vw'>
+      <Box maxWidth='55vw'>
       <Flex flexDirection='column' justifyContent='space-between'>
         <ChooseDashboards data={dashData.LookML} Fn={setChosenLookML} heading='1.Choose LookML Dashboard to Sync'/>
         {chosenLookML && 

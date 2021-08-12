@@ -1,6 +1,6 @@
 import React, {  useState, useContext } from 'react'
 import { AppContext } from './AppContext.js'
-import { Button, Box, Flex, DividerVertical, Heading, List, ListItem } from '@looker/components'
+import { Button, Box, Flex, DividerVertical, Heading, List, ListItem, Tabs, TabList, TabPanels, Tab, TabPanel } from '@looker/components'
 import { ChooseDashboards } from './ChooseDashboards.js'
 import { LogContainer } from './LogContainer.js'
 import { isEmpty } from 'lodash'
@@ -12,6 +12,7 @@ import { RoundedBox } from './CommonComponents.js'
     const { dashData, makeLinks, remapLinks, removeLinks } = useContext(AppContext)
     const [selectedLookML, setSelectedLookML] = useState(undefined)
     const [selectedDash, setSelectedDash] = useState([])
+    const [currentTab,setCurrentTab] = useState(0)
     
     const handleCreateLinks = () => {
       if (isEmpty(selectedDash) || isEmpty(selectedLookML)) return
@@ -60,6 +61,8 @@ import { RoundedBox } from './CommonComponents.js'
       }
 
       return (
+        <RoundedBox minWidth='30vw' style={{marginTop: '20px', minHeight: '60vh'}}>
+        <Heading as='h5' p='small'>Info</Heading>
         <List style={{overflowY: 'scroll'}}>
           {hasLink && <ListItem disabled>{linkText}</ListItem>}
           {hasUother && <ListItem disabled>{otherUText}</ListItem>}
@@ -68,41 +71,46 @@ import { RoundedBox } from './CommonComponents.js'
             {otherLData.map((d, ix) => <ListItem disabled key={ix}>{d}</ListItem>)}
             </>)}
         </List>
+        </RoundedBox>
       )
     }
 
     return (
       <Box>
         <Flex flexDirection='row' justifyContent='space-around' alignItems='flex-start' m='medium'>
-          <Flex flexDirection='column' alignItems='center' justifyContent='space-between' minWidth='30vw'>
+          <Flex flexDirection='column' alignItems='center' justifyContent='space-between' width='55vw'>
             <Flex flexDirection='row' justifyContent='space-between'>
             <Box margin='0px 20px'><ChooseDashboards data={dashData.LookML} Fn={setSelectedLookML} heading='1.Choose LookML Dashboard'/></Box>
             <Box margin='0px 20px'><ChooseDashboards multi UDD data={dashData.UDD} Fn={setSelectedDash} heading='2.Choose UDDs to Link'/></Box>
             </Flex>
           <Flex m='medium' justifyContent='space-around' width='80%'>
-            {(selectedDash.length > 0 && selectedLookML) && 
             <Button
+            disabled={!(selectedDash.length > 0 && selectedLookML)}
               width='40%'
               onClick={handleCreateLinks}
             >Create Links with {selectedDash.length} UDD{selectedDash.length > 1 && 's'}</Button>
-            }
-            {(selectedDash.length > 0 || selectedLookML) && 
             <Button
+              disabled={!(selectedDash.length > 0 || selectedLookML)}
               width='40%'
               color='critical'
               onClick={handleRemoveLinks}
-            >Remove Links</Button>}
+            >Remove Links</Button>
           </Flex>
           </Flex>
           <DividerVertical stretch/>
-          <Flex flexDirection='column' justifyContent='space-between'>
-            <RoundedBox style={{minHeight: '40vh'}}>
-              <Heading as='h5' p='small'>Info</Heading>
-              {showInfo()}
-            </RoundedBox>
-            <LogContainer/>
-            </Flex>
+          <Box width='35vw'>
 
+          <Tabs index={currentTab} onChange={setCurrentTab}>
+        <TabList>
+        <Tab>Info</Tab>
+        <Tab>Log</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>{showInfo()}</TabPanel>
+          <TabPanel><LogContainer/></TabPanel>
+        </TabPanels>
+      </Tabs>
+          </Box>
           </Flex>
     </Box>
     )
