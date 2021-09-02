@@ -8,6 +8,7 @@ export const AppContextProvider = (props) => {
   const [log, addLog] = useReducer((cur, m) => {cur.unshift(m);  return cur}, [])
   const [rawDashData, setRawDashData] = useState({})
   const [dashData, setDashData] = useState({})
+  const [folderData, setFolderData] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
     const initialise = async () => { 
@@ -16,6 +17,8 @@ export const AppContextProvider = (props) => {
         let v = await core40SDK.all_dashboards()
         setRawDashData(v.value)
         processDashboards(v.value, UDDMap, lookmlMap);
+        let v2 = await core40SDK.all_folders('name, id, parent_id,is_embed,is_embed_shared_root,is_embed_users_root,is_personal,is_personal_descendant,is_shared_root,is_users_root')
+        processFolders(v2.value, v.value);
         setIsLoading(false)
       } catch (error) {
         setMsg('critical', error)
@@ -64,6 +67,30 @@ export const AppContextProvider = (props) => {
     setDashData(tmp)
   }
   
+  const reduceFolders = (inArray, fullArray=null, dashData) => {
+    let allItems = fullArray ? fullArray : inArray
+    let target = Array.from(fullArray ? inArray : inArray.filter(f => !f.parent_id))
+    target.forEach(f => {
+      let children = allItems.filter(item => item.parent_id == f.id)
+      f.dashboards = dashData.filter(d => d.folder.id == f.id)
+      f.children = children.length == 0 ? [] : reduceFolders(children, allItems, dashData)
+    })
+    return target
+  }
+
+  const processFolders = (v, dashData) => {
+    let shared = v.filter(f => (f.is_shared_root || !(f.is_users_root || f.is_personal || f.is_personal_descendant || f.is_embed)) && f.id !== 'lookml')
+    let personal = v.filter(f => (f.is_users_root || f.is_personal || f.is_personal_descendant))
+    let embed = v.filter(f => f.is_embed)
+    
+    let data = {
+      shared: reduceFolders(shared, null, dashData),
+      personal: reduceFolders(personal, null, dashData),
+      embed: reduceFolders(embed, null, dashData)
+    }
+    setFolderData(data)
+  }
+
   const makeLinks = (UDDs, LookML) => {
     UDDs.forEach(d => {
       addLog(`Making link between ${d} and ${LookML}`)
@@ -131,6 +158,7 @@ export const AppContextProvider = (props) => {
     addLog,
     dashData,
     setDashData,
+    folderData,
     isLoading,
     makeLinks,
     syncLookMLDash,

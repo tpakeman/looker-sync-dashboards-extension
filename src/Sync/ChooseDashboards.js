@@ -1,17 +1,13 @@
 import React, {  useState, useContext } from 'react'
 import { AppContext } from './AppContext.js'
-import { Flex, Heading, InputSearch,MenuList, MenuItem, Panels, Panel, List, ListItem, Text, ButtonOutline, Icon, Divider} from '@looker/components'
+import { Flex, Heading, InputSearch,ListItem, Text, ButtonOutline, Tooltip, Divider, TreeCollection, Tree, TreeItem, RadioGroup} from '@looker/components'
 import { RoundedBox } from './CommonComponents.js'
 import { isEmpty } from 'lodash'
-import { Reports } from '@looker/icons'
+import { Person, Folder, Dashboard, NoteAlt } from '@styled-icons/material-outlined'
+const MATCHCOLOR = 'rgba(108, 67, 224, 0.2)'
 
-// TODO
-// Add icons based for personal and shared folders
-// UDD browser cannot handle nesting properly - need a different approach.
-
-
-export const ChooseDashboards = (props) => {
-    const defaultDash = props.UDD ? [] : undefined
+export const ChooseLookMLDashboards = (props) => {
+    const defaultDash = undefined
     const { addMsg } = useContext(AppContext)
     const [selectedDash, setSelectedDash] = useState(defaultDash)
     const [searchText, setSearchText] = useState('')
@@ -21,59 +17,54 @@ export const ChooseDashboards = (props) => {
     }
 
     const handleClick = (e) => {
-        let tmp = e
-        if (props.multi) {
-            if (selectedDash.includes(e)) {
-                tmp = selectedDash.filter(v => v !== e)
-            } else {
-                tmp = [...selectedDash, e]
-            }
-            tmp = tmp.filter((v, i, s) => s.indexOf(v) == i)
-        } 
-        setSelectedDash(tmp)
-        props.Fn(tmp)
+        setSelectedDash(e)
+        props.Fn(e)
       }
-    
 
-      const getOptions = () => {
+
+      const generateTree = () => {
+        console.log(props.data)
         if (isEmpty(props.data)) {
-            addMsg('inform', 'No dashboards found')
+            addMsg('inform', 'No LookML dashboards found')
             return []
         }
-        let categories = Object.values(props.data)
-        if (props.UDD) {
-          categories = categories
-            .map((v) => v.folder.name)
-            .filter((value, index, self) => self.indexOf(value) === index)
-            .sort((a, b) => a-b)
-            .map(e => ({
-              label: e,
-              options: Object.values(props.data)
-                .filter(v => v.folder.name == e)
-                .map(v=> ({label: v.title, value: v.id}))
-            }))
-        } else {
-          categories = categories
-            .map((v) => v.model.id)
-            .filter((value, index, self) => self.indexOf(value) === index)
-            .sort((a, b) => a-b)
-                .map(e => ({
-                  label: e,
-                  options: Object.values(props.data)
-                    .filter(v => v.model.id == e)
-                    .map(v=> ({label: v.title, value: v.id, 'model': v.model.id}))
-                }))
-        }
 
-        return searchText === '' 
-        ? categories
-        : categories
-          .filter(o => o.options.filter(e => e.label.toLowerCase().includes(searchText.toLowerCase())).length > 0)
-      }
+        let reshaped = Object.values(props.data).reduce((acc, cur) => {
+          if (Object.keys(acc).includes(cur.model.id)) {
+            acc[cur.model.id].dashboards.push(cur)
+          } else {
+            acc[cur.model.id] = {label: cur.model.label, dashboards: [cur]}
+          }
+          return acc
+        }, {})
+
+
+        return (Object.values(reshaped).map((m, ix) => {
+          let inactive = m.dashboards.filter(d2 => d2.title.toLowerCase().includes(searchText.toLowerCase())).length == 0
+          return (
+            <>
+            {inactive
+            ? <Tooltip content='Empty folder' placement='right'><ListItem key={ix} style={{marginLeft:'8px'}} icon={<NoteAlt/>} disabled>{m.label}</ListItem></Tooltip> 
+            :
+              <Tree icon={<NoteAlt/>} key={ix} label={m.label} >
+                {m.dashboards.map((d, ix2) => {
+                  let isMatch = selectedDash == d.id
+                  if (searchText === '' || d.title.toLowerCase().includes(searchText.toLowerCase())) {
+                  return <TreeItem 
+                  // detail={d.id}
+                   key={ix2}  icon={<Dashboard/>} onClick={() => handleClick(d.id)} style={{backgroundColor: isMatch ? MATCHCOLOR: ''}}>{d.title}</TreeItem>
+                }
+                })}
+              </Tree>
+        } </>
+            )
+        })
+    )
+  }
     
     return (
-        <RoundedBox style={{width: '100%', height: '100%', overflowX:'hidden'}}>
-          <Flex flexDirection='column' justifyContent='space-between' alignContent='stretch' height='100%'>
+        <RoundedBox>
+          <Flex flexDirection='column' height='calc(100% - 50px)' overflowY='scroll'>
           <Heading as='h3' mb='small'>{props.heading}</Heading>
           <InputSearch
             placeholder='Search by Dashboard Name'
@@ -81,43 +72,12 @@ export const ChooseDashboards = (props) => {
             onChange={setSearchText}
             marginBottom='small'
           />
-          <Panels>
-            <List iconGutter={props.UDD} style={{margin:'auto'}}>
-              <Text>{props.UDD ? 'Folders' : 'Models'}</Text>
-              {getOptions().map((e, ix) => {
-                return (<Panel
-                  title={e.label}
-                  key={ix}
-                  direction='right'
-                  content={
-                  <MenuList style={{height: '80%', overflowY: 'scroll'}}>
-                    {e.options.map((o, ix2) => {
-                    let isMatch = props.multi ? selectedDash.includes(o.value) : selectedDash == o.value;
-                    return (
-                    <MenuItem
-                      key={ix2}
-                      onClick={() => handleClick(o.value)}
-                      style={{
-                        backgroundColor: isMatch ? 'rgba(108, 67, 224, 0.2)': '',
-                        // border: isMatch ? '1px solid rgb(108, 67, 224)' : '',
-                        // borderRadius: isMatch ? '4px' : ''
-                        // color: isMatch ? '#ffffff': ''
-                      }}
-                      detail={o.value}
-                    >
-                      {o.label}
-                    </MenuItem>
-                      )
-                  })}
-                    </MenuList>}>
-                <ListItem > {e.label}</ListItem></Panel> )}
-                // <ListItem icon={<Reports />}> {e.label}</ListItem></Panel> )}
-                )}
-            </List>
-          </Panels>
+          <TreeCollection>
+            {generateTree()}
+          </TreeCollection>
             <Divider stretch/>
-            <Flex width='100%' flexDirection='row' alignSelf='flex-end' justifyContent='space-between' mt='small'>
-            <Text>{`${props.multi ? selectedDash.length: (isEmpty(selectedDash) ? '0' : '1')} selected`}</Text>
+            <Flex height='50px' width='100%' flexDirection='row' alignSelf='flex-end' justifyContent='space-between' mt='small'>
+            <Text>{`${isEmpty(selectedDash) ? '0' : '1'} selected`}</Text>
               <ButtonOutline
                 size='xsmall'
                 color='critical'
@@ -130,3 +90,113 @@ export const ChooseDashboards = (props) => {
         </RoundedBox>
       )
 }
+
+export const ChooseUDDs = (props) => {
+  const defaultDash = []
+    const { addMsg, folderData } = useContext(AppContext)
+    const [selectedDash, setSelectedDash] = useState(defaultDash)
+    const [searchText, setSearchText] = useState('')
+    const [folderType, setFolderType] = useState('shared')
+    
+    const handleClick = (e) => {
+      let tmp
+      if (selectedDash.includes(e)) {
+        tmp = selectedDash.filter(v => v !== e)
+      } else {
+        tmp = [...selectedDash, e]
+      }
+      tmp = tmp.filter((v, i, s) => s.indexOf(v) == i)
+      setSelectedDash(tmp)
+      props.Fn(tmp)
+    }
+
+    const clearAll = () => {
+      setSelectedDash(defaultDash)
+    }
+    
+
+    const produceTree = (data) => {
+      let tmp = Array.isArray(data) ? data : [data]
+        return (
+          tmp.map((d, ix) => {
+            let child = Array.isArray(d.children) ? d.children : [d.children]
+            let dash = Array.isArray(d.dashboards) ? d.dashboards : [d.dashboards]
+            let inactive = (d.dashboards.filter(d2 => d2.title.toLowerCase().includes(searchText.toLowerCase())).length + d.children.length) == 0 
+            let icon = d.is_personal ? <Person/> : <Folder/>
+            return (
+              <>
+              {inactive? <Tooltip content='Empty folder' placement='right'><ListItem key={ix} style={{marginLeft:'8px'}} icon={icon} disabled>{d.name}</ListItem></Tooltip> : <Tree
+                icon={icon}
+                key={ix}
+                label={d.name}
+                detail={d.id}
+              >
+                {child.map(c => {return produceTree(c)})}
+                {dash.map((d2, ix) => {
+                  let isMatch = selectedDash.includes(d2.id)
+                  if (searchText === '' || d2.title.toLowerCase().includes(searchText.toLowerCase())) {
+                  return (
+                    <TreeItem
+                      key={ix}
+                      onClick={() => handleClick(d2.id)}
+                      style={{backgroundColor: isMatch ? MATCHCOLOR: ''}}
+                      detail={d2.id}
+                    >
+                      {d2.title}
+                    </TreeItem>
+                  ) 
+                }
+                })}
+              </Tree>}
+              </>
+            )
+          })
+        )
+    }
+  
+      const generateDashTree = () => {
+        let data = folderData[folderType]
+        if (folderType == 'shared' || folderType == 'personal') {
+          data = data[0].children
+        }
+        return produceTree(data)
+      }
+
+  const chooseFolderType = (e) => setFolderType(e)
+
+  return (
+    <RoundedBox>
+      <Flex flexDirection='column' height='calc(100% - 50px)' overflowY='scroll'>
+      <Heading as='h3' mb='small'>{props.heading}</Heading>
+      <Flex flexDirection='row'>
+        <RadioGroup inline
+          value={folderType}
+          onChange={chooseFolderType}
+          options={[{value: 'shared', label: 'Shared'}, {value: 'personal', label: 'Personal'}, {value: 'embed', label: 'Embed'}]}
+        />
+      </Flex>
+      <InputSearch
+            placeholder='Search by UDD Name'
+            value={searchText}
+            onChange={setSearchText}
+            marginBottom='small'
+      />
+      <TreeCollection height='100%' overflowy='scroll'>
+      {generateDashTree()}
+      </TreeCollection>
+    </Flex>
+    <Divider stretch/>
+            <Flex height='50px' width='100%' flexDirection='row' alignSelf='flex-end' justifyContent='space-between' mt='small'>
+            <Text>{`${selectedDash.length} selected`}</Text>
+              <ButtonOutline
+                size='xsmall'
+                color='critical'
+                marginBottom='medium'
+                onClick={clearAll}
+                disabled={isEmpty(selectedDash)}
+              >Clear</ButtonOutline>
+            </Flex>
+  </RoundedBox>
+  )
+}
+

@@ -2,9 +2,9 @@ import { Button, Flex, Box, DividerVertical ,Tab,Tabs,TabList,TabPanels,TabPanel
 import React, {useContext, useState} from 'react'
 import { AppContext } from './AppContext'
 import {isEmpty} from 'lodash'
-import { ChooseDashboards } from './ChooseDashboards'
+import { ChooseLookMLDashboards } from './ChooseDashboards'
 import { LogContainer } from './LogContainer'
-import { RoundedBox } from './CommonComponents'
+import { RoundedBox, FlexRowSpaceEven } from './CommonComponents'
 
 //TO DO - show what will be synced when you hit the sync button
 
@@ -38,10 +38,10 @@ export const SyncDashBoards = () => {
 
     return (
       <Box>
-      <Flex flexDirection='row' justifyContent='space-evenly' alignContent='stretch' m='medium' height='100%'>
+      <FlexRowSpaceEven m='medium'>
       <Box width='50vw'>
       <Flex  flexDirection='column' alignItems='center' justifyContent='space-between' alignContent='stretch' width='50vw'>
-        <ChooseDashboards data={dashData.LookML} Fn={setChosenLookML} heading='1.Choose LookML Dashboard to Sync'/>
+        <ChooseLookMLDashboards data={dashData.LookML} Fn={setChosenLookML} heading='1.Choose LookML Dashboard to Sync'/>
         <Button
         size='large'
         marginTop='medium'
@@ -65,7 +65,7 @@ export const SyncDashBoards = () => {
         </TabPanels>
       </Tabs>
         </Box>
-      </Flex>
+      </FlexRowSpaceEven>
       </Box>
     )
   }

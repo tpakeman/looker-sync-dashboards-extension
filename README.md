@@ -34,9 +34,13 @@ This functionality is currently only possible through the API, hence this extens
 * UDD browser does not do nesting correctly - it only handles a single layer from folder-->dashboard
   * This will be replaced with a proper content browser soon
 * Logging is double-showing messages
+* showInfo info messages not tracking state correctly
 
 ### Upcoming Features
+* Info should tell you when there is no link
 * Add a clear log button
 * Add icons to show which folder type is which
 * Link to successfully synced dashboards
 * Colour code log messages
+* Make responsive
+* Better loading element
