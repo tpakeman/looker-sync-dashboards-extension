@@ -1,5 +1,6 @@
 import React, {  useContext, useState, useReducer, createContext, useEffect } from 'react'
 import { ExtensionContext } from '@looker/extension-sdk-react'
+import { useMediaQuery } from 'react-responsive'
 export const AppContext = createContext()
 
 export const AppContextProvider = (props) => {
@@ -27,6 +28,9 @@ export const AppContextProvider = (props) => {
     }
     initialise()
   }, [])
+
+  const isBigScreen = useMediaQuery({ query: '(min-width: 1824px)' })
+  const isTabletOrMobile = useMediaQuery({ query: '(max-width: 1224px)' })
 
   const fetchLinks = async () => {
     let r = await core40SDK.search_dashboards('id,lookml_link_id')
@@ -163,7 +167,9 @@ export const AppContextProvider = (props) => {
     makeLinks,
     syncLookMLDash,
     remapLinks,
-    removeLinks
+    removeLinks,
+    isBigScreen,
+    isTabletOrMobile
   }
   return (
     <AppContext.Provider value={contextValue}>

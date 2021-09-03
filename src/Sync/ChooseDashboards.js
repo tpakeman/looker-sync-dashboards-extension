@@ -41,7 +41,6 @@ export const ChooseLookMLDashboards = (props) => {
   };
 
   const generateTree = () => {
-    console.log(props.data);
     if (isEmpty(props.data)) {
       addMsg("inform", "No LookML dashboards found");
       return [];
@@ -64,9 +63,9 @@ export const ChooseLookMLDashboards = (props) => {
       return (
         <>
           {inactive ? (
-            <Tooltip content="Empty folder" placement="right">
+            <Tooltip key={`t-${ix}`} content="Empty folder" placement="right">
               <ListItem
-                key={ix}
+                key={`l-${ix}`}
                 style={{ marginLeft: "8px" }}
                 icon={<NoteAlt />}
                 disabled
@@ -242,7 +241,7 @@ export const ChooseUDDs = (props) => {
 
 const DashChooserTemplate = (props) => {
   return (
-    <RoundedBox>
+    <RoundedBox width={props.width || '90%'}>
       <Flex flexDirection="column" height='100%'>
       <Flex flexDirection="column" height='100%' overflowY='scroll'>
         <Box>
