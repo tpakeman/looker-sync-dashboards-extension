@@ -4,7 +4,7 @@ import React from 'react'
 
 export const InfoPage = () => {
     return (
-        <Box mt='medium'>
+        <Box mt='medium' height='60vh' overflowY='scroll'>
         <BlockText>It is possible to 'sync' user-defined dashboards (UDDs) with LookML dashboards.</BlockText>
           <BlockText>If changes are made to the LookML then the sync utility can push these changes to any linked UDDs.</BlockText>
           <BlockText>This provides a useful compromise: centrally managed dashboards that still live in normal folders.</BlockText>

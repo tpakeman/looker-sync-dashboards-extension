@@ -31,12 +31,15 @@ This functionality is currently only possible through the API, hence this extens
 ---
 
 ### Known issues
-* Improve CSS and make responsive
+* Disable on mobile - show a message saying only sync functionality available on mobile
 * Logging is double-showing messages
-* showInfo info messages not tracking state correctly
+* Find better way to avoid race condition on info box state without resorting to setTimeout
+* Need to scan dashboards living in root shared folder
+* Send biz case + recording to Toshi with link to repo
 
 ### Upcoming Features
 * Add a clear log button
+* Allow syncing multiple LookML dashboards at once
 * Link to successfully synced dashboards
 * Colour code log messages
-* Make responsive
+* Add declarative routing

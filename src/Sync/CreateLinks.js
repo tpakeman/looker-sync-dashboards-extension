@@ -19,6 +19,7 @@ import { RoundedBox, FlexRowSpaceEven } from './CommonComponents.js'
       if (isEmpty(selectedDash) || isEmpty(selectedLookML)) return
       makeLinks(selectedDash, selectedLookML)
       remapLinks()
+      setTimeout(() => showInfo(), 3000)
       setCurrentTab(1)
     }
 
@@ -28,6 +29,7 @@ import { RoundedBox, FlexRowSpaceEven } from './CommonComponents.js'
       let selected = [...selectedDash, ...linkedUDDs]
       removeLinks(selected)
       remapLinks()
+      setTimeout(() => showInfo(), 3000)
       setCurrentTab(1)
     }
 
@@ -70,7 +72,7 @@ import { RoundedBox, FlexRowSpaceEven } from './CommonComponents.js'
       return (
         <RoundedBox>
         <Heading as='h5' p='small'>Info</Heading>
-        <List style={{overflowY: 'scroll'}}>
+        <List>
           {hasNone && <ListItem disabled>
             {!isEmpty(selectedLookML) || !isEmpty(selectedDash)
           ? 'No existing links for selected dashboards'
@@ -90,7 +92,7 @@ import { RoundedBox, FlexRowSpaceEven } from './CommonComponents.js'
     const linkButtonText = () => {
       let txt = 'Create Links'
       if (!isTabletOrMobile) {
-        txt += `with ${selectedDash.length} UDD`
+        txt += ` with ${selectedDash.length} UDD`
       }
       if (selectedDash.length > 1) {
         txt += 's'
@@ -101,7 +103,7 @@ import { RoundedBox, FlexRowSpaceEven } from './CommonComponents.js'
     return (
       <Box>
         <FlexRowSpaceEven m='medium' small={isTabletOrMobile}>
-          <Flex flexDirection='column' alignItems='stretch' justifyContent='space-between' alignContent='stretch' width={isTabletOrMobile ? '100vw' : '50vw'}>
+          <Flex flexDirection='column' alignItems='stretch' justifyContent='space-between' alignContent='stretch' width={isTabletOrMobile ? '100vw' : '50vw'} height={!isTabletOrMobile && '100%'}>
             { isTabletOrMobile 
             ? <Tabs index={currentDashTab} onChange={setCurrentDashTab}>
               <TabList>
@@ -140,7 +142,7 @@ import { RoundedBox, FlexRowSpaceEven } from './CommonComponents.js'
         <Tab>Info</Tab>
         <Tab>Log</Tab>
         </TabList>
-        <TabPanels>
+        <TabPanels height='100%'>
           <TabPanel>{showInfo()}</TabPanel>
           <TabPanel><LogContainer/></TabPanel>
         </TabPanels>

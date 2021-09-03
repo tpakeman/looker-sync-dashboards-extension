@@ -109,6 +109,7 @@ export const ChooseLookMLDashboards = (props) => {
     <DashChooserTemplate
       heading={props.heading}
       radios={radios}
+      placeholder="Search by Dashboard Name"
       generateTree={generateTree}
       searchText={searchText}
       setSearchText={setSearchText}
@@ -149,7 +150,8 @@ export const ChooseUDDs = (props) => {
       let dash = Array.isArray(d.dashboards) ? d.dashboards : [d.dashboards];
       let inactive =
         d.dashboards.filter((d2) =>
-          d2.title.toLowerCase().includes(searchText.toLowerCase())
+          d2.title.toLowerCase().includes(searchText.toLowerCase()) ||
+          d2.id.toLowerCase().includes(searchText.toLowerCase())
         ).length +
           d.children.length ==
         0;
@@ -176,7 +178,8 @@ export const ChooseUDDs = (props) => {
                 let isMatch = selectedDash.includes(d2.id);
                 if (
                   searchText === "" ||
-                  d2.title.toLowerCase().includes(searchText.toLowerCase())
+                  d2.title.toLowerCase().includes(searchText.toLowerCase()) ||
+                  d2.id.toLowerCase().includes(searchText.toLowerCase())
                 ) {
                   return (
                     <TreeItem
@@ -243,14 +246,14 @@ const DashChooserTemplate = (props) => {
   return (
     <RoundedBox width={props.width || '90%'}>
       <Flex flexDirection="column" height='100%'>
-      <Flex flexDirection="column" height='100%' overflowY='scroll'>
+      <Flex flexDirection="column" height='100%' overflowY='scroll' height='60vh'>
         <Box>
         <Heading as="h3" mb="small">
           {props.heading}
         </Heading>
         {props.radios()}
         <InputSearch
-          placeholder="Search by Dashboard Name"
+          placeholder={props.placeholder || "Search by Dashboard Name or ID"}
           value={props.searchText}
           onChange={props.setSearchText}
           marginBottom="small"

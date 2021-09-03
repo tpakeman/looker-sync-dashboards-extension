@@ -24,7 +24,7 @@ const LoadingWrapper = (props) => {
   if (props.isLoading) {
     return (
     <Flex flexDirection='column' justifyContent='space-around' alignContent='center' alignItems='center'>
-      <Heading as='h4'>Loading dashboards</Heading>
+      <Heading as='h3'>Loading dashboards and folders</Heading>
       <Spinner/>
       </Flex>
     )
@@ -36,14 +36,14 @@ const LoadingWrapper = (props) => {
 const TabbedNav = (props) => {
   const { isLoading } = useContext(AppContext)
   return (
-    <Box width='100%'>
+    <Box width='100%' height='100%'>
       <Tabs index={props.currentTab} onChange={props.setCurrentTab}>
         <TabList>
         {props.pages.map(p => <Tab key={p.ix}>{p.title}</Tab>)}
         </TabList>
-        <TabPanels>
+        <TabPanels height='100%'>
           {props.pages.map(p => <TabPanel key={p.ix}>
-            <Flex flexDirection='column'>
+            <Flex flexDirection='column' height='100%' justifyContent='flex-start'>
               <Heading>{p.heading}</Heading>
               {p.ix > 0 ? <LoadingWrapper isLoading={isLoading}>{p.content}</LoadingWrapper> : p.content}
             </Flex>
@@ -57,8 +57,8 @@ const TabbedNav = (props) => {
 const AppInner = () => {
   const [currentTab, setCurrentTab] = useState(DEFAULTPAGE)
   return (
-      <Space around>
-      <Flex flexDirection='column' alignItems='flex-start' alignContent='stretch' p='medium' width='100%'>
+      // <Space around height='100%'>
+      <Flex flexDirection='column' alignItems='flex-start' alignContent='stretch' p='medium' width='100%' height='100%'>
         <MessageBanner/>
         <TabbedNav
           currentTab={currentTab}
@@ -66,7 +66,7 @@ const AppInner = () => {
           pages={PAGES}
         />
       </Flex>
-      </Space>
+      // </Space>
   )
 }
 

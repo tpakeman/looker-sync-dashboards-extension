@@ -61,7 +61,7 @@ export const SyncDashBoards = () => {
         <Tab>Info</Tab>
         <Tab>Log</Tab>
         </TabList>
-        <TabPanels>
+        <TabPanels height='60vh'>
           <TabPanel>{showInfo()}</TabPanel>
           <TabPanel><LogContainer/></TabPanel>
         </TabPanels>

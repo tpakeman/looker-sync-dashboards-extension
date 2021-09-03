@@ -6,11 +6,20 @@ export const AppContext = createContext()
 export const AppContextProvider = (props) => {
   const { core40SDK } = useContext(ExtensionContext)
   const [msg, setMsg] = useState({})
-  const [log, addLog] = useReducer((cur, m) => {cur.unshift(m);  return cur}, [])
   const [rawDashData, setRawDashData] = useState({})
   const [dashData, setDashData] = useState({})
   const [folderData, setFolderData] = useState({})
   const [isLoading, setIsLoading] = useState(true)
+
+  const [log, addLog] = useReducer((cur, m) => {
+    let d = new Date()
+    let [msg, type] = [...m]
+    let newM = [`${d.toLocaleTimeString()} :: ${msg}`, type]
+    cur.unshift(newM)
+    return cur
+  }, [])
+
+
   useEffect(() => {
     const initialise = async () => { 
     try {
@@ -97,18 +106,18 @@ export const AppContextProvider = (props) => {
 
   const makeLinks = (UDDs, LookML) => {
     UDDs.forEach(d => {
-      addLog(`Making link between ${d} and ${LookML}`)
+      addLog([`Making link between ${d} and ${LookML}`, 'action'])
       try {
         core40SDK.update_dashboard(d, {lookml_link_id: LookML}).then(r => {
           if (r.ok) {
-            addLog(`Success for dashboard ${d}`)
+            addLog([`Success for dashboard ${d}`, 'status'])
           } else {
-            addLog(`Failure for dashboard ${d}. Check console`)
+            addLog([`Failure for dashboard ${d}. Check console`, 'status'])
           }
         })
       } catch (e) {
         console.error(e)
-        addLog(`ERROR! ${e}`)
+        addLog([`ERROR! ${e}`, 'error'])
         addMsg('critical', e)
       }
     })
@@ -116,18 +125,18 @@ export const AppContextProvider = (props) => {
 
   const removeLinks = (UDDs) => {
     UDDs.forEach(d => {
-      addLog(`Removing lookml_link_ids for ${d}`)
+      addLog([`Removing lookml_link_ids for dashboard ${d}`, 'action'])
       try {
         core40SDK.update_dashboard(d, {lookml_link_id: ''}).then(r => {
           if (r.ok) {
-            addLog(`Success for dashboard ${d}`)
+            addLog([`Success for dashboard ${d}`, 'status'])
           } else {
-            addLog(`Failure for dashboard ${d}. Check console`)
+            addLog([`Failure for dashboard ${d}. Check console`, 'status'])
           }
         })
       } catch (e) {
         console.error(e)
-        addLog(`ERROR! ${e}`)
+        addLog([`ERROR! ${e}`, 'error'])
         addMsg('critical', e)
       }
     })
@@ -135,17 +144,17 @@ export const AppContextProvider = (props) => {
 
   const syncLookMLDash = (LookML) => {
     try {
-        addLog(`Syncing LookML Dashboard ${LookML}`)
+        addLog([`Syncing LookML Dashboard ${LookML}`, 'action'])
         core40SDK.sync_lookml_dashboard(LookML).then(r => {
         if (r.ok) {
-          addLog(`Success for ${LookML}`)
+          addLog([`Success for dashboard ${LookML}`, 'status'])
         } else {
-          addLog(`Failure for ${LookML}. Check console`)
+          addLog([`Failure for dashboard ${LookML}. Check console`, 'status'])
         }
       })
     } catch (e) {
       console.error(e)
-      addLog(`ERROR! ${e}`)
+      addLog([`ERROR! ${e}`, 'error'])
       addMsg('critical', e)
     }
   }
